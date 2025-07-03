@@ -469,20 +469,55 @@ function generateWebsite() {
     }, 3000);
 }
 
-// Download files
-function downloadFiles() {
-    // Generate the files content
-    const files = generateWebsiteFiles();
+// Download files as ZIP
+async function downloadFiles() {
+    showToast('Creating ZIP File', 'Preparing your birthday website files...', 'success');
     
-    // Create zip file (simplified - in real implementation, use JSZip library)
-    showToast('Download Started', 'Your birthday wish website files are being prepared...', 'success');
-    
-    // For demo purposes, we'll download individual files
-    setTimeout(() => {
-        downloadFile('index.html', files.html);
-        setTimeout(() => downloadFile('style.css', files.css), 500);
-        setTimeout(() => downloadFile('script.js', files.js), 1000);
-    }, 1000);
+    try {
+        // Create a new JSZip instance
+        const zip = new JSZip();
+        
+        // Generate the files content
+        const files = generateWebsiteFiles();
+        
+        // Add main files to zip
+        zip.file('index.html', files.html);
+        zip.file('style.css', files.css);
+        zip.file('script.js', files.js);
+        
+        // Create assets folder structure
+        const assetsFolder = zip.folder('assets');
+        const imagesFolder = assetsFolder.folder('images');
+        const soundsFolder = assetsFolder.folder('sounds');
+        
+        // Add images to the zip
+        for (const image of formData.images) {
+            if (image.file) {
+                // Convert image file to base64 and add to zip
+                const imageData = await fileToBase64(image.file);
+                imagesFolder.file(image.name, imageData.split(',')[1], {base64: true});
+            }
+        }
+        
+        // Add music file to the zip
+        if (formData.backgroundMusic && formData.backgroundMusic.file) {
+            const musicData = await fileToArrayBuffer(formData.backgroundMusic.file);
+            soundsFolder.file(formData.backgroundMusic.name, musicData);
+        }
+        
+        // Generate the zip file
+        const zipBlob = await zip.generateAsync({type: 'blob'});
+        
+        // Create download link
+        const zipName = `${formData.birthdayPersonName ? sanitizeFilename(formData.birthdayPersonName) + '-' : ''}birthday-website.zip`;
+        downloadBlob(zipBlob, zipName);
+        
+        showToast('ZIP Downloaded Successfully!', 'Your birthday website is ready to deploy!', 'success');
+        
+    } catch (error) {
+        console.error('Error creating ZIP:', error);
+        showToast('Download Error', 'There was an error creating the ZIP file. Please try again.', 'error');
+    }
 }
 
 // Generate website files
@@ -1142,6 +1177,44 @@ function formatFileSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Convert file to base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+// Convert file to array buffer
+function fileToArrayBuffer(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+// Sanitize filename for safe file naming
+function sanitizeFilename(filename) {
+    return filename.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+}
+
+// Download blob as file
+function downloadBlob(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
 }
 
 function downloadFile(filename, content) {
