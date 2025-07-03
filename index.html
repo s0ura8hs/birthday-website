@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 Birthday Wish Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1 class="main-title">🎂 Birthday Wish Generator</h1>
+                <p class="subtitle">Create beautiful, interactive birthday websites with photos, questions, and music</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="steps-container">
+                <div class="step active" data-step="1">
+                    <div class="step-icon">📝</div>
+                    <div class="step-title">Basic Info</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2">
+                    <div class="step-icon">🖼️</div>
+                    <div class="step-title">Upload Images</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3">
+                    <div class="step-icon">❓</div>
+                    <div class="step-title">Create Questions</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="4">
+                    <div class="step-icon">🎵</div>
+                    <div class="step-title">Background Music</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="5">
+                    <div class="step-icon">🎉</div>
+                    <div class="step-title">Generate & Download</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Step 1 of 5 - 20% Complete</p>
+            </div>
+
+            <!-- Main Content Card -->
+            <div class="main-card">
+                <!-- Step 1: Basic Info -->
+                <div class="step-content active" id="step1">
+                    <div class="step-header">
+                        <h2 class="step-title-main">Let's Create Something Magical ✨</h2>
+                        <p class="step-subtitle">Tell us about the special person</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="birthdayName">Birthday Person's Name</label>
+                        <input type="text" id="birthdayName" placeholder="Enter the birthday person's name..." />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="startText">Opening Message</label>
+                        <textarea id="startText" placeholder="Write a beautiful opening message that will appear at the beginning..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endText">Closing Message</label>
+                        <textarea id="endText" placeholder="Write a heartfelt closing message that will appear at the end..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 2: Upload Images -->
+                <div class="step-content" id="step2">
+                    <div class="step-header">
+                        <h2 class="step-title-main">Upload Your Memories 📸</h2>
+                        <p class="step-subtitle">Upload all the images you want to include in the birthday wish</p>
+                    </div>
+
+                    <!-- Upload Area -->
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="upload-text">
+                            <p class="upload-title">Drop images here or click to upload</p>
+                            <p class="upload-subtitle">Supported formats: JPG, PNG, GIF</p>
+                        </div>
+                        <input type="file" id="imageInput" multiple accept="image/*" />
+                        <button class="upload-btn">
+                            <i class="fas fa-upload"></i>
+                            Choose Images
+                        </button>
+                    </div>
+
+                    <!-- Uploaded Images Grid -->
+                    <div class="images-section" id="imagesSection" style="display: none;">
+                        <div class="images-header">
+                            <h3 id="imagesCount">Uploaded Images (0)</h3>
+                            <button class="clear-btn" id="clearImagesBtn">
+                                <i class="fas fa-trash"></i>
+                                Clear All
+                            </button>
+                        </div>
+                        <div class="images-grid" id="imagesGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Create Questions -->
+                <div class="step-content" id="step3">
+                    <div class="step-header">
+                        <h2 class="step-title-main">Create Questions & Answers ❓</h2>
+                        <p class="step-subtitle">Add questions where each answer is one of your uploaded images</p>
+                    </div>
+
+                    <div id="noImagesMessage" class="no-images-message">
+                        <i class="fas fa-images"></i>
+                        <p>Please upload images first before creating questions</p>
+                    </div>
+
+                    <div id="questionsSection" style="display: none;">
+                        <!-- Add New Question -->
+                        <div class="add-question-card">
+                            <h3 class="add-question-title">
+                                <i class="fas fa-plus"></i>
+                                Add New Question
+                            </h3>
+                            <div class="form-group">
+                                <label for="questionText">Question Text</label>
+                                <input type="text" id="questionText" placeholder="e.g., Which photo shows our first trip together?" />
+                            </div>
+                            <div class="form-group">
+                                <label for="answerSelect">Answer Image</label>
+                                <select id="answerSelect">
+                                    <option value="">Select the image that answers this question</option>
+                                </select>
+                            </div>
+                            <button class="add-question-btn" id="addQuestionBtn">
+                                <i class="fas fa-plus"></i>
+                                Add Question
+                            </button>
+                        </div>
+
+                        <!-- Existing Questions -->
+                        <div id="existingQuestions"></div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Background Music -->
+                <div class="step-content" id="step4">
+                    <div class="step-header">
+                        <h2 class="step-title-main">Add Some Music 🎵</h2>
+                        <p class="step-subtitle">Upload background music for the perfect ambiance</p>
+                    </div>
+                    
+                    <div class="music-upload-area" id="musicUploadArea">
+                        <i class="fas fa-music music-icon"></i>
+                        <div class="music-upload-content" id="musicUploadContent">
+                            <p class="music-upload-title">Upload Background Music</p>
+                            <p class="music-upload-subtitle">Supported formats: MP3</p>
+                            <input type="file" id="musicInput" accept=".mp3,audio/mp3" />
+                            <button class="music-upload-btn">
+                                <i class="fas fa-upload"></i>
+                                Choose Music File
+                            </button>
+                        </div>
+                        <div class="music-selected" id="musicSelected" style="display: none;">
+                            <p class="music-filename" id="musicFilename"></p>
+                            <button class="remove-music-btn" id="removeMusicBtn">
+                                <i class="fas fa-trash"></i>
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Generate & Download -->
+                <div class="step-content" id="step5">
+                    <div class="step-header">
+                        <h2 class="step-title-main">Generate Your Website 🎉</h2>
+                        <p class="step-subtitle">Review your details and generate the birthday wish website</p>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="summary-card">
+                        <h3 class="summary-title">
+                            <i class="fas fa-eye"></i>
+                            Summary
+                        </h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="summary-label">Birthday Person</span>
+                                <span class="summary-value" id="summaryName">Not set</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Total Images</span>
+                                <span class="summary-value" id="summaryImages">0 images</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Questions</span>
+                                <span class="summary-value" id="summaryQuestions">0 questions</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Background Music</span>
+                                <span class="summary-value" id="summaryMusic">Not set</span>
+                            </div>
+                        </div>
+                        <div class="summary-message" id="summaryMessage"></div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <div class="generate-section" id="generateSection">
+                        <button class="generate-btn" id="generateBtn">
+                            <i class="fas fa-magic"></i>
+                            Generate Birthday Website
+                        </button>
+                        <div class="generate-progress" id="generateProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill generate-progress-fill"></div>
+                            </div>
+                            <p>Creating HTML, CSS, and JavaScript files...</p>
+                        </div>
+                    </div>
+
+                    <!-- Generated Files -->
+                    <div class="generated-section" id="generatedSection" style="display: none;">
+                        <div class="success-badge">
+                            <i class="fas fa-check-circle"></i>
+                            Website Generated Successfully!
+                        </div>
+
+                        <!-- Download Options -->
+                        <div class="download-options">
+                            <button class="download-btn" id="downloadBtn">
+                                <i class="fas fa-download"></i>
+                                Download ZIP
+                            </button>
+                            <button class="preview-btn" id="previewBtn">
+                                <i class="fas fa-eye"></i>
+                                Live Preview
+                            </button>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="instructions-card">
+                            <h3 class="instructions-title">
+                                <i class="fas fa-file-text"></i>
+                                How to Use Your Birthday Website 🎉
+                            </h3>
+                            
+                            <div class="folder-structure">
+                                <h4>📁 Folder Structure:</h4>
+                                <ul class="structure-list">
+                                    <li>📄 <code>index.html</code> - Main website file</li>
+                                    <li>🎨 <code>style.css</code> - Beautiful styling with glitter effects</li>
+                                    <li>⚙️ <code>script.js</code> - Interactive game functionality</li>
+                                    <li>📂 <code>assets/images/</code> - All your uploaded images</li>
+                                    <li>🎵 <code>assets/sounds/</code> - Your background music file</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="instructions-grid">
+                                <div class="instruction-box">
+                                    <h4>💻 For Developers:</h4>
+                                    <ol>
+                                        <li>Extract the ZIP file</li>
+                                        <li>Open folder in any IDE (VS Code, etc.)</li>
+                                        <li>Open <code>index.html</code> in browser</li>
+                                        <li>Or use Live Server extension</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="instruction-box">
+                                    <h4>🌐 Deploy Online:</h4>
+                                    <ol>
+                                        <li>Upload folder to GitHub repository</li>
+                                        <li>Connect GitHub to Netlify</li>
+                                        <li>Deploy with one click!</li>
+                                        <li>Share the live link! 🚀</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="features-box">
+                                <h4>✨ Features Included:</h4>
+                                <div class="features-grid">
+                                    <div class="feature-list">
+                                        <p>• ✨ Glitter & sparkle animations</p>
+                                        <p>• 💖 Floating hearts effect</p>
+                                        <p>• 🎵 Background music integration</p>
+                                    </div>
+                                    <div class="feature-list">
+                                        <p>• 📱 Mobile-responsive design</p>
+                                        <p>• 🎮 Interactive memory game</p>
+                                        <p>• 🎊 Celebration confetti effects</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="navigation">
+                    <div class="nav-left">
+                        <button class="nav-btn prev-btn" id="prevBtn" style="display: none;">
+                            <i class="fas fa-arrow-left"></i>
+                            Previous
+                        </button>
+                        <button class="demo-btn" id="demoBtn">
+                            Load Demo Data
+                        </button>
+                    </div>
+                    
+                    <div class="nav-right">
+                        <button class="nav-btn next-btn" id="nextBtn">
+                            Next
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button class="nav-btn generate-nav-btn" id="generateNavBtn" style="display: none;">
+                            <i class="fas fa-magic"></i>
+                            Generate Website
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
